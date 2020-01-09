@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const validator = require('validator')
 const User = require('./user')
 
-//returns a model with overlapping schema with the user
+// returns a model with overlapping schema with the user
 const interpreter = User.discriminator('Interpreter', 
     new mongoose.Schema({
         location: {
@@ -46,7 +46,12 @@ const interpreter = User.discriminator('Interpreter',
                     default: false
                 }
             }
-        }]
+        }],
+        // type of interpreting: simultaneous, etc
+        typeOfInterpreting: {
+            type: String,
+            trim: true
+        }
     })
 )
 

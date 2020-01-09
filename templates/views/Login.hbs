@@ -14,14 +14,16 @@
 
 
     <div>
-        <p>Username</p>
-        <input class = "placeholder-box" type="text" placeholder="Enter Username" required>
+      <form action="/login" method="post">
+        <p>Email</p>
+        <input class = "placeholder-box" name = "email" type="text" placeholder="Enter Username" required>
         
         <p>Password</p>
-        <input class = "placeholder-box" type="password" placeholder="Enter Password" required>
+        <input class = "placeholder-box" name = "password" type="password" placeholder="Enter Password" required>
         
         <button type="submit">Login</button>
         <input type="checkbox"> Remember me
+      </form>
 
         
       <!-- Button to open the modal -->
