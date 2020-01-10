@@ -50,6 +50,7 @@ router.patch('/iProfile/me',  auth, async (req, res) =>{
 })
 
 // upload certification
+// test this part
 const upload = multer({
     limits: {
         fileSize: 100000000
@@ -63,6 +64,7 @@ const upload = multer({
     }
 })
 
+// TODO: make the files either pdf or doc/docx or both
 router.post('/users/me/certificates', auth, upload.single('certificate'), async (req, res) => {
     const newCertificate = { 
         certificate: req.body.certificates.certificate, 
@@ -74,7 +76,7 @@ router.post('/users/me/certificates', auth, upload.single('certificate'), async 
     res.status(400).send({ error: error.message })
 })
 
-// rewrite this
+// TODO: delete only one certificate
 router.delete('/users/me/certificates', auth, async (req, res) => {
     try {
         // deletes all for now
@@ -86,6 +88,7 @@ router.delete('/users/me/certificates', auth, async (req, res) => {
     }
 })
 
+// TODO: fix the context type thing
 router.get('/users/:id/certificates', async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
