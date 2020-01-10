@@ -52,7 +52,7 @@ router.patch('/iProfile/me',  auth, async (req, res) =>{
 // upload certification
 const upload = multer({
     limits: {
-        fileSize: 1000000
+        fileSize: 100000000
     },
     fileFilter(req, file, cb) {
         if (!file.originalname.match(/\.(doc|docx|pdf)$/)) {
@@ -63,30 +63,39 @@ const upload = multer({
     }
 })
 
-router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
-    req.user.avatar = req.file.buffer
+router.post('/users/me/certificates', auth, upload.single('certificate'), async (req, res) => {
+    const newCertificate = { 
+        certificate: req.body.certificates.certificate, 
+        file: req.file.buffer }
+    req.user.certificates = req.user.certificates.concat(newCertificate)
     await req.user.save()
     res.send()
 }, (error, req, res, next) => {
     res.status(400).send({ error: error.message })
 })
 
-router.delete('/users/me/avatar', auth, async (req, res) => {
-    req.user.avatar = undefined
-    await req.user.save()
-    res.send()
+// rewrite this
+router.delete('/users/me/certificates', auth, async (req, res) => {
+    try {
+        // deletes all for now
+        req.user.certificates = []
+        await req.user.save()
+        res.send()
+    } catch (e) {
+        res.send(500).send()
+    }
 })
 
-router.get('/users/:id/avatar', async (req, res) => {
+router.get('/users/:id/certificates', async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
 
-        if (!user || !user.avatar){
+        if (!user || user.certificates.length === 0 ){
             throw new Error()
         }
 
-        res.set('Content-Type', 'image/jpg')
-        res.send(user.avatar)
+        // res.set('Content-Type', 'application/pdf')
+        res.send(user.certificates)
     } catch (e) {
         res.status(404).send()
     }

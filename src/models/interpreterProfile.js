@@ -39,7 +39,7 @@ const interpreter = User.discriminator('Interpreter',
                 type: String,
                 required: true,
                 file: {
-                    type: String,
+                    type: Buffer,
                     required: true
                 },
                 isValidated: {
