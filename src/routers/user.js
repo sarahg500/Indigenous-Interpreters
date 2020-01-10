@@ -4,6 +4,7 @@ const sharp = require('sharp')
 const User = require('../models/user')
 const auth = require('../middleware/auth')
 const bodyParser = require('body-parser')
+const { sendWelcomeEmail} = require('../emails/account')
 const router = new express.Router()
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -15,6 +16,7 @@ router.post('/signup', urlencodedParser, async (req, res)=>{
 
     try{
         await user.save()
+        sendWelcomeEmail(user.email, user.name)
         const token = await user.generateAuthToken()
         res.status(201).send({ user, token })
     } catch(e){
