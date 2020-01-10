@@ -5,6 +5,7 @@ const User = require('./user')
 // returns a model with overlapping schema with the user
 const interpreter = User.discriminator('Interpreter', 
     new mongoose.Schema({
+        // location
         location: {
             type: String,
             trim: true,
@@ -48,9 +49,15 @@ const interpreter = User.discriminator('Interpreter',
             }
         }],
         // type of interpreting: simultaneous, etc
-        typeOfInterpreting: {
+        service: {
             type: String,
             trim: true
+        },
+        // rating
+        rating: {
+            type: Number,
+            min: 1,
+            max: 5
         }
     })
 )

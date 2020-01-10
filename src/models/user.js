@@ -40,20 +40,15 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true
         }
-    }]
-    //add profile pic
-    //idk how this would stored
+    }],
+    avatar: {
+        type: Buffer
+    }
 }, {
     discriminatorKey: 'kind'
 })
 
-/* userSchema.virtual('iProfile', {
-    ref: 'InterpreterProfile',
-    localField: '_id',
-    foreignField: 'owner'
-}) */
-
-//checks that the user exists in database
+// checks that the user exists in database
 userSchema.statics.findByCredentials = async(email, password) =>{
     const user = await User.findOne({ email })
 
@@ -70,7 +65,7 @@ userSchema.statics.findByCredentials = async(email, password) =>{
     return user
 }
 
-//generates the auth token
+// generates the auth token
 userSchema.methods.generateAuthToken = async function() {
     const user = this
     const token = jwt.sign({_id: user.id.toString() }, 'thisismynewcourse')
@@ -81,7 +76,7 @@ userSchema.methods.generateAuthToken = async function() {
     return token
 }
 
-//doesn't print password or tokens
+// doesn't print password or tokens
 userSchema.methods.toJSON = function(){
     const user = this
     const userObject = user.toObject()
@@ -92,7 +87,7 @@ userSchema.methods.toJSON = function(){
     return userObject
 }
 
-//has the plain text pw before saving
+// has the plain text pw before saving
 userSchema.pre('save', async function (next) {
     const user = this
 
