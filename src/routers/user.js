@@ -68,12 +68,12 @@ router.get('/users/me', auth, async (req, res) => {
 // gets multiple users (this is for the search page), no auth
 router.get('/users', async (req, res)=>{
     const match = {
+        // TODO: this is irrelevant
         isInterpreter: true
     }
     
-    // TODO: make sure querystrings in GET request are set up correctly
+    // TODO: make sure querystrings in GET request are set up correctly in request firing function
     // TODO: customine search options and make sure this code works correctly
-    // TODO: set up correct query strings
     // TODO: how should the data be sorted upon results showing up?
     if (req.query.language) {
         // parse into data format of language
