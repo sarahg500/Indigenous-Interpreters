@@ -69,17 +69,52 @@ router.get('/users/me', auth, async (req, res) => {
     res.send(req.user)
 })
 
-// gets multiple users (this is for the search page)
-// no auth
+// gets multiple users (this is for the search page), no auth
 router.get('/users', async (req, res)=>{
+    const match = {
+        isInterpreter: true
+    }
+    
+    // TODO: make sure querystrings in GET request are set up correctly
+    // TODO: customine search options and make sure this code works correctly
+    // TODO: set up correct query strings
+    // TODO: how should the data be sorted upon results showing up?
+    if (req.query.language) {
+        // parse into data format of language
+        match.language = req.query.language
+    }
+    if (req.query.location) {
+        // parse into data format of location
+        match.location = req.query.location
+    }
+    if (req.query.service) {
+        // parse into data format of service
+        match.service = req.query.service
+    }
+    if (req.query.rating) {
+        // parse into data format of rating
+        match.rating = req.query.rating
+    }
+    if (req.query.certification) {
+        // parse into data format of certification
+        match.certification = req.query.certification
+    }
+
     try{
-
-        //change this to use different search criteria
-        const users = await User.find({ isInterpreter: true})
-
+        await req.user.populate({
+            path: 'tasks',
+            match,
+            options: {
+                // query string must contain ?limit=VALUE&skip=VALUE
+                // limit controls how many results per page
+                // skips control page number 1, 2, 3, etc. To get page number 2 if limit is 10, then skip=10
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip)                
+            }
+        }).execPopulate()
+    
         //gotta let users down more easily when no matches are found
-
-        res.send(users)
+        res.send(req.user)
     }catch(e){
         res.status(500).send()
     }
