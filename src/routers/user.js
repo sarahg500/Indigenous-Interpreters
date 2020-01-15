@@ -1,7 +1,10 @@
 const express = require('express')
+const multer = require('multer')
+const sharp = require('sharp')
 const User = require('../models/user')
 const auth = require('../middleware/auth')
 const bodyParser = require('body-parser')
+const { sendWelcomeEmail} = require('../emails/account')
 const router = new express.Router()
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -13,6 +16,7 @@ router.post('/signup', urlencodedParser, async (req, res)=>{
 
     try{
         await user.save()
+        sendWelcomeEmail(user.email, user.name)
         const token = await user.generateAuthToken()
         res.status(201).send({ user, token })
     } catch(e){
@@ -65,17 +69,52 @@ router.get('/users/me', auth, async (req, res) => {
     res.send(req.user)
 })
 
-// gets multiple users (this is for the search page)
-// no auth
+// gets multiple users (this is for the search page), no auth
 router.get('/users', async (req, res)=>{
+    const match = {
+        // TODO: this is irrelevant
+        isInterpreter: true
+    }
+    
+    // TODO: make sure querystrings in GET request are set up correctly in request firing function
+    // TODO: customine search options and make sure this code works correctly
+    // TODO: how should the data be sorted upon results showing up?
+    if (req.query.language) {
+        // parse into data format of language
+        match.language = req.query.language
+    }
+    if (req.query.location) {
+        // parse into data format of location
+        match.location = req.query.location
+    }
+    if (req.query.service) {
+        // parse into data format of service
+        match.service = req.query.service
+    }
+    if (req.query.rating) {
+        // parse into data format of rating
+        match.rating = req.query.rating
+    }
+    if (req.query.certification) {
+        // parse into data format of certification
+        match.certification = req.query.certification
+    }
+
     try{
-
-        //change this to use different search criteria
-        const users = await User.find({ isInterpreter: true})
-
+        await req.user.populate({
+            path: 'tasks',
+            match,
+            options: {
+                // query string must contain ?limit=VALUE&skip=VALUE
+                // limit controls how many results per page
+                // skips control page number 1, 2, 3, etc. To get page number 2 if limit is 10, then skip=10
+                limit: parseInt(req.query.limit),
+                skip: parseInt(req.query.skip)                
+            }
+        }).execPopulate()
+    
         //gotta let users down more easily when no matches are found
-
-        res.send(users)
+        res.send(req.user)
     }catch(e){
         res.status(500).send()
     }
@@ -100,6 +139,50 @@ router.patch('/users/me',  auth, async (req, res) =>{
         res.send(req.user)
     }catch(e){
         res.status(400).send(e)
+    }
+})
+
+// upload profile pic
+const upload = multer({
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) {
+            return cb(new Error('Please upload an image file'))
+        }
+
+        cb(undefined, true)
+    }
+})
+
+router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
+    const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
+    req.user.avatar = buffer
+    await req.user.save()
+    res.send()
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
+
+router.delete('/users/me/avatar', auth, async (req, res) => {
+    req.user.avatar = undefined
+    await req.user.save()
+    res.send()
+})
+
+router.get('/users/:id/avatar', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id)
+
+        if (!user || !user.avatar){
+            throw new Error()
+        }
+
+        res.set('Content-Type', 'image/jpg')
+        res.send(user.avatar)
+    } catch (e) {
+        res.status(404).send()
     }
 })
 

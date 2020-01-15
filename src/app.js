@@ -10,7 +10,7 @@ const contactRouter = require('./routers/contactForm')
 const iProfileRouter = require('./routers/interpreterProfile')
 
 const app = express()
-const port = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000
 
 app.use(express.json())
 app.use(userRouter)
@@ -92,7 +92,7 @@ app.get('*', (req, res) => {
     })
 })
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
     
 })
 

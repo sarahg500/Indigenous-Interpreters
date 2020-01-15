@@ -10,48 +10,45 @@
     <div class="sections">
       <h1>{{title}}</h1>
     </div>
-    <form class="sections">
-      <input class = "placeholder-box" placeholder="This is placeholder">
-      <select class = "qualifications">
-        <option> Language </option>
-        <option> Option 1 </option>        
-        <option> Option 2 </option>
-        <option> Option 3 </option>
-        <option> Option 4 </option>
-      </select>
-      <select class = "qualifications">
+    <form method="get" action="/search" class="sections">
+      <input class = "placeholder-box" placeholder="This is placeholder">          
+      <datalist id="Language" class="qualifications">
+        <!-- How to prefill? Search HTML custom language -->
+        <!-- Fix QS -->
+        <option value="English">English</option>
+        <option value="Spanish">Spanish</option>
+        <option value="Russian">Russian</option>
+      </datalist>
+      <input name="Language" list="Language"/> 
+      
+      <select id="Location" class = "qualifications">
         <option> Location </option>
-        <option> Option 1 </option>        
+        <option> Option 1 </option>                
         <option> Option 2 </option>
         <option> Option 3 </option>
         <option> Option 4 </option>
       </select>
-      <select class = "qualifications">
-        <option> Service </option>
-        <option> Option 1 </option>        
-        <option> Option 2 </option>
-        <option> Option 3 </option>
-        <option> Option 4 </option>
-
+      <select name="Service" class = "qualifications">
+        <option value="Relay"> Relay </option>        
+        <option value="Consecutive"> Consecutive </option>
+        <option value="Simultaneous"> Simultaneous </option>        
       </select>
-      <select class = "qualifications">
+      <select id="Rating" class = "qualifications">
         <option> Rating </option>
         <option> Option 1 </option>        
         <option> Option 2 </option>
         <option> Option 3 </option>
         <option> Option 4 </option>
       </select>
-       <select class = "qualifications">
+       <select id="Certification" class = "qualifications">
         <option> Certification </option>
-        <option> Option 1 </option>
-        <option> Option 2 </option>
-        <option> Option 3 </option>
-        <option> Option 4 </option>
+        <option> Level 3 </option>
+        <option> Level 4 </option>
+        <option> Level 5 </option>
       </select>
-    </form>
-    <button class ="search-button"> Submit </button>
+      <input type="submit">
+    </form>    
     
     <h3 id = "search-prompt"> Search for an Interpretor By Category! </h3>
- 
   </body>
 </html>
