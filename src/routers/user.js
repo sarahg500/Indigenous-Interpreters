@@ -72,6 +72,7 @@ router.get('/users/me', auth, async (req, res) => {
 })
 
 // gets multiple users (this is for the search page), no auth
+// Security issues??
 router.get('/search', async (req, res)=>{
     // rerender the search page
     res.render('search', {
