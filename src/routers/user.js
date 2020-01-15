@@ -71,30 +71,26 @@ router.get('/users/me', auth, async (req, res) => {
     res.send(req.user)
 })
 
-router.get('/search', async (req, res)=>{
-    // this gets executed
-    console.log("executed")
-    // but the search page never loads because of this method
-})
-
 // gets multiple users (this is for the search page), no auth
-router.get('/users', async (req, res)=>{
+router.get('/search', async (req, res)=>{
+    // rerender the search page
+    res.render('search', {
+        title: 'Find Interpreters'
+    })
+
     const match = {
         // TODO: this is irrelevant..?
         isInterpreter: true
     }
-    // this does not work
-    console.log(req.query.language)
-    console.log(req.query.location)
     
-    // TODO: make sure querystrings in GET request are set up correctly in request firing function    
     // TODO: how should the data be sorted upon results showing up?
     if (req.query.language) {
-        // parse into data format of language (all lowercase or something)
+        // TODO: parse into how it is stored
         match.language = req.query.language
+        console.log(req.query.language)
     }
     if (req.query.location) {
-        // parse into data format of location
+        // TODO: parse into data format of location
         // geocode(req.query.location, (error, { latitude, longitude, location } ) => {            
         //    if (error) {
         //        return console.log(error)
@@ -103,23 +99,29 @@ router.get('/users', async (req, res)=>{
             // So much cleaner way to do this
         //    match.location = "" + latitude + ", " + longitude + ""
         //})        
+        console.log(req.query.location)
     }
     if (req.query.service) {
-        // parse into data format of service
+        // TODO: parse into data format of service
         match.service = req.query.service
+        console.log(req.query.service)
     }
     if (req.query.rating) {
-        // parse into data format of rating
+        // TODO: parse into data format of rating
         match.rating = req.query.rating
+        console.log(req.query.rating)
     }
     if (req.query.certification) {
-        // parse into data format of certification
+        // TODO: parse into data format of certification
         match.certification = req.query.certification
+        console.log(req.query.certification)
     }
-
+    
+    // This does not work
+    /*
     try{
         await req.user.populate({
-            path: 'tasks',
+            path: 'users',
             match,
             options: {
                 // query string must contain ?limit=VALUE&skip=VALUE
@@ -135,6 +137,7 @@ router.get('/users', async (req, res)=>{
     }catch(e){
         res.status(500).send()
     }
+    */
 })
 
 // user can update their own profiles

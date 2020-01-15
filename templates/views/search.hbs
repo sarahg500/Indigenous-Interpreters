@@ -14,16 +14,16 @@
     <!-- can not change action to anything but /search otherwise the search page will not be loaded -->
     <form id="searchForm" method="GET" action="/search" class="sections">
       <input class = "placeholder-box" placeholder="This is placeholder">              
-      <input type="text" id="language" name="Language" placeholder="Language..." class="qualifications">    
-      <input type="text" id="location" name="Location" placeholder="Location..." class="qualifications">
-      <select name="Service" class = "qualifications">     
+      <input type="text" id="language" name="language" placeholder="Language..." class="qualifications">    
+      <input type="text" id="location" name="location" placeholder="Location..." class="qualifications">
+      <select name="service" class = "qualifications">     
         <option value="" disabled selected hidden>Type of help</option>   
         <option value="Service"> Service </option>
         <option value="Relay"> Relay </option>        
         <option value="Consecutive"> Consecutive </option>
         <option value="Simultaneous"> Simultaneous </option>        
       </select>
-      <select name="Rating" class="qualifications" placeholder="Rating">
+      <select name="rating" class="qualifications" placeholder="Rating">
         <option value="" disabled selected hidden>Rating</option>
         <option value="1"> 1 </option>        
         <option value="2"> 2 </option>
@@ -31,7 +31,7 @@
         <option value="4"> 4 </option>
         <option value="5"> 5 </option>
       </select>
-       <select name="Certification" class = "qualifications">
+       <select name="certification" class = "qualifications">
         <option value="" disabled selected hidden>Certification</option>
         <option value="Type 1"> Type 1 </option>
         <option value="Type 2"> Type 2 </option>
