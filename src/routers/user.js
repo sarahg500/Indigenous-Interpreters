@@ -5,6 +5,8 @@ const User = require('../models/user')
 const auth = require('../middleware/auth')
 const bodyParser = require('body-parser')
 const { sendWelcomeEmail} = require('../emails/account')
+// this might be wrong path
+const geocode = require('../../public/js/geocode')
 const router = new express.Router()
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -69,23 +71,38 @@ router.get('/users/me', auth, async (req, res) => {
     res.send(req.user)
 })
 
+router.get('/search', async (req, res)=>{
+    // this gets executed
+    console.log("executed")
+    // but the search page never loads because of this method
+})
+
 // gets multiple users (this is for the search page), no auth
 router.get('/users', async (req, res)=>{
     const match = {
-        // TODO: this is irrelevant
+        // TODO: this is irrelevant..?
         isInterpreter: true
     }
+    // this does not work
+    console.log(req.query.language)
+    console.log(req.query.location)
     
-    // TODO: make sure querystrings in GET request are set up correctly in request firing function
-    // TODO: customine search options and make sure this code works correctly
+    // TODO: make sure querystrings in GET request are set up correctly in request firing function    
     // TODO: how should the data be sorted upon results showing up?
     if (req.query.language) {
-        // parse into data format of language
+        // parse into data format of language (all lowercase or something)
         match.language = req.query.language
     }
     if (req.query.location) {
         // parse into data format of location
-        match.location = req.query.location
+        // geocode(req.query.location, (error, { latitude, longitude, location } ) => {            
+        //    if (error) {
+        //        return console.log(error)
+        //    }
+        
+            // So much cleaner way to do this
+        //    match.location = "" + latitude + ", " + longitude + ""
+        //})        
     }
     if (req.query.service) {
         // parse into data format of service
