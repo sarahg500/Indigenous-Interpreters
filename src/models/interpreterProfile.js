@@ -16,13 +16,13 @@ const interpreter = User.discriminator('Interpreter',
             iLangFluency: {
                 type: String,
                 required: true,
-                fluency:{
-                    type: Number,
-                    required: true,
-                    trim: true,
-                    min: 1,
-                    max: 5
-                },
+            },
+            fluency:{
+                type: Number,
+                required: true,
+                trim: true,
+                min: 1,
+                max: 5
             }
         }],
         // english language fluency
@@ -37,15 +37,15 @@ const interpreter = User.discriminator('Interpreter',
         certifications: [{
             certification: {
                 type: String,
-                required: true,
-                file: {
-                    type: Buffer,
-                    required: true
-                },
-                isValidated: {
-                    type: Boolean,
-                    default: false
-                }
+                required: true
+            },
+            file: {
+                type: Buffer,
+                required: true
+            },
+            isValidated: {
+                type: Boolean,
+                default: false
             }
         }],
         // type of interpreting: simultaneous, etc
