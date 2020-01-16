@@ -9,13 +9,12 @@ const router = new express.Router()
 // creating a profile
 // idk on what screen this will live
 router.post('/iProfile', async (req, res)=>{
-    const iProfile = new InterpreterProfile ({
-        ...req.body
-    })
+    const iProfile = new InterpreterProfile (req.body)
 
     try{
         await iProfile.save()
-        res.status(201).send(iProfile)
+        const token = await iProfile.generateAuthToken()
+        res.status(201).send({ iProfile, token })
     } catch(e){
         res.status(400).send(e)
     }
@@ -64,14 +63,17 @@ const upload = multer({
     }
 })
 
-// TODO: make the files either pdf or doc/docx or both
+// Adds a Certification to the user
 router.post('/users/me/certificates', auth, upload.single('certificate'), async (req, res) => {
+
+    //creates new certificate from req
     const newCertificate = { 
-        certificate: req.body.certificates.certificate, 
+        certification: req.body.certificateName, 
         file: req.file.buffer }
-    req.user.certificates = req.user.certificates.concat(newCertificate)
+    req.user.certifications = req.user.certifications.concat(newCertificate)
+
     await req.user.save()
-    res.send()
+    res.status(200).send(req.user)
 }, (error, req, res, next) => {
     res.status(400).send({ error: error.message })
 })
@@ -81,6 +83,18 @@ router.delete('/users/me/certificates', auth, async (req, res) => {
     try {
         // deletes all for now
         req.user.certificates = []
+        await req.user.save()
+        res.send()
+    } catch (e) {
+        res.send(500).send()
+    }
+})
+
+// TODO: verify a certificate
+router.patch('/users/me/certificates', auth, async (req, res) => {
+    try {
+        // deletes all for now
+        // req.user.certificates = []
         await req.user.save()
         res.send()
     } catch (e) {

@@ -30,10 +30,10 @@ router.post('/login', urlencodedParser, async (req, res) =>{
     try{
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = await user.generateAuthToken()
-        //res.send({ user, token })
-        res.render('profile', {
+        res.send({ user, token })
+        /* res.status(200).render('profile', {
             title: 'Make a Profile'
-        })
+        }) */
     } catch (e){
         res.status(400).send()
     }
