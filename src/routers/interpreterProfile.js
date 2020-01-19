@@ -9,17 +9,13 @@ const router = new express.Router()
 // creating a profile
 // idk on what screen this will live
 router.post('/iProfile', async (req, res)=>{
-    const iProfile = new InterpreterProfile ({
-        ...req.body
-    })
+    var iProfile = new InterpreterProfile (req.body)
 
     try{
         // interpreter coordinates are generated from location string
-        await iProfile.generateCoordinates(req).then( async () => {
-            await iProfile.save().then( () =>
-                res.status(201).send(iProfile)
-            )
-        })
+        await iProfile.generateCoordinates(req)
+        await iProfile.save()
+        res.status(201).send(iProfile)
     } catch(e){
         console.log(e)
         res.status(400).send(e)

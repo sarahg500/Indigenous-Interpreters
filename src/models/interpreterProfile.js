@@ -79,27 +79,8 @@ const interpreterSchema = new mongoose.Schema({
 )
 
 // generates the coordinates
+// have to return a promise in order for await keyword to work
 interpreterSchema.methods.generateCoordinates = async function(req) {
-    //console.log(req.body)
-    //console.log(this)
-    /* const interpreter = this
-    const coors = await geocode(req.query.location, (error, { latitude, longitude, location } ) => {
-        if (error) {
-            return console.log(error)
-        }
-
-        return [latitude, longitude]
-    })
-
-    console.log(coors)
-
-    interpreter.location.coodinates.latitude = coors[0]
-    interpreter.location.coodinates.longitude = coor[1]
-    await interpreter.save()
-
-    return coordinates */
-    var long  = 3;
-    var lat = null;
 
     let locationPromise = new Promise(function(resolve, reject) {
         if(req.body.location.locationString) {
@@ -107,8 +88,7 @@ interpreterSchema.methods.generateCoordinates = async function(req) {
                 // errors need to be done 
                 if (error) {
                     return console.log(error)
-                }
-                console.log(latitude, longitude)         
+                }         
                 resolve({latitude, longitude})
             })
         } else {            
@@ -117,19 +97,15 @@ interpreterSchema.methods.generateCoordinates = async function(req) {
         }           
     });
 
+    // need to use arrow functionin order to use the this keyword
     locationPromise.then( (value) => {       
         if (value.latitude && value.longitude) {
-            //console.log(value.latitude, value.longitude)
             this.location.coordinates.latitude = value.longitude
             this.location.coordinates.longitude = value.latitude
-            //long = value.longitude
-            //lat = value.latitude
-            //console.log(long, lat)
-            console.log(this)
-            //await this.save()
         }
     }); 
 
+    return locationPromise
 }
 
 module.exports = User.discriminator('Interpreter', interpreterSchema)
