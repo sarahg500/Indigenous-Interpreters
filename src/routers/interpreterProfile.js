@@ -15,6 +15,7 @@ router.post('/iProfile', async (req, res)=>{
         // interpreter coordinates are generated from location string
         await iProfile.generateCoordinates(req)
         await iProfile.save()
+        const token = await user.generateAuthToken()
         res.status(201).send(iProfile)
     } catch(e){
         console.log(e)
