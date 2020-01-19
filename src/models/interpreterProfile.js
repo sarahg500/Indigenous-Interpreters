@@ -11,15 +11,9 @@ const interpreter = User.discriminator('Interpreter',
             trim: true,
             required: true,
             coordinates: {
-                // call method to parse location to latitude and longitude
-                /*geocode(location, (error, { latitude, longitude, location } ) => {            
-                    // TODO errors need to be done 
-                    if (error) {
-                        return console.log(error)
-                    }                
-                    resolve({latitude, longitude})
-                })
-                */
+                type: Number,
+                required: true
+                // call method to parse location to latitude and longitude ..?                
             }            
         },
         // indigenous language fluency
@@ -77,5 +71,21 @@ const interpreter = User.discriminator('Interpreter',
         }
     })
 )
+
+// generates the coordinates
+interpreter.methods.generateCoordinates = async function() {
+    const interpreter = this
+    const coors = geocode(req.query.location, (error, { latitude, longitude, location } ) => {
+        if (error) {
+            return console.log(error)
+        }
+        return {latitude, longitude}
+    })
+
+    interpreter.location.coodinates = interpreter.location.coodinates.concat({ coors })
+    await interpreter.save()
+
+    return coordinates
+}
 
 module.exports = interpreter
