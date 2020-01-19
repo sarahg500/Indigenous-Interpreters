@@ -18,7 +18,7 @@ router.post('/signup', urlencodedParser, async (req, res)=>{
 
     try{
         await user.save()
-        sendWelcomeEmail(user.email, user.name)
+        // sendWelcomeEmail(user.email, user.name)
         const token = await user.generateAuthToken()
         res.status(201).send({ user, token })
     } catch(e){
@@ -72,60 +72,59 @@ router.get('/users/me', auth, async (req, res) => {
 })
 
 // gets multiple users (this is for the search page), no auth
-// Security issues??
-router.get('/search', async (req, res)=>{
-    // rerender the search page
+router.get('/search', async (req, res)=>{    
     res.render('search', {
         title: 'Find Interpreters'
     })
 
     const match = {
-        // TODO: this is irrelevant..?
-        isInterpreter: true
+        kind: "Interpreter"
     }
-    
-    // TODO: how should the data be sorted upon results showing up?
-    if (req.query.language) {
-        // TODO: parse into how it is stored
-        match.language = req.query.language
-        console.log(req.query.language)
+
+    if (req.query.language) {        
+        match.language = req.query.language.trim().toLowerCase()
     }
-    if (req.query.location) {
-        // TODO: parse into data format of location
-        // geocode(req.query.location, (error, { latitude, longitude, location } ) => {            
-        //    if (error) {
-        //        return console.log(error)
-        //    }
-        
-            // So much cleaner way to do this
-        //    match.location = "" + latitude + ", " + longitude + ""
-        //})        
-        console.log(req.query.location)
+    if (req.query.certification) {        
+        match.certification = req.query.certification.trim().toLowerCase()  
     }
-    if (req.query.service) {
-        // TODO: parse into data format of service
-        match.service = req.query.service
-        console.log(req.query.service)
+    if (req.query.service) {        
+        match.service = req.query.service.trim().toLowerCase()
     }
-    if (req.query.rating) {
-        // TODO: parse into data format of rating
-        match.rating = req.query.rating
-        console.log(req.query.rating)
+    if (req.query.rating) {        
+        match.rating = req.query.rating        
     }
-    if (req.query.certification) {
-        // TODO: parse into data format of certification
-        match.certification = req.query.certification
-        console.log(req.query.certification)
-    }
-    
-    // This does not work
-    /*
-    try{
+
+    let locationPromise = new Promise(function(resolve, reject) {
+        if(req.query.location) {
+            geocode(req.query.location, (error, { latitude, longitude, location } ) => {            
+                // TODO errors need to be done 
+                if (error) {
+                    return console.log(error)
+                }                
+                resolve({latitude, longitude})
+            })
+        } else {            
+            // TODO more correct way?
+            resolve(0, 0)
+        }           
+    });
+
+    locationPromise.then(function(value) {       
+        if (value.latitude && value.longitude) {
+            match.latitude = value.latitude
+            match.longitude = value.longitude        
+        }
+        // fetch user coordinates, distance formula with lat long < x miles returns true
+        console.log(match)
+    });    
+
+    // TODO: this does not yet work
+    /*try{
         await req.user.populate({
             path: 'users',
             match,
             options: {
-                // query string must contain ?limit=VALUE&skip=VALUE
+                // TODO: query string must contain ?limit=VALUE&skip=VALUE
                 // limit controls how many results per page
                 // skips control page number 1, 2, 3, etc. To get page number 2 if limit is 10, then skip=10
                 limit: parseInt(req.query.limit),
@@ -133,9 +132,9 @@ router.get('/search', async (req, res)=>{
             }
         }).execPopulate()
     
-        //gotta let users down more easily when no matches are found
+        // TODO: error
         res.send(req.user)
-    }catch(e){
+    } catch(e){
         res.status(500).send()
     }
     */

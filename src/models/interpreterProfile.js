@@ -9,12 +9,25 @@ const interpreter = User.discriminator('Interpreter',
         location: {
             type: String,
             trim: true,
-            required: true
+            required: true,
+            coordinates: {
+                // call method to parse location to latitude and longitude
+                /*geocode(location, (error, { latitude, longitude, location } ) => {            
+                    // TODO errors need to be done 
+                    if (error) {
+                        return console.log(error)
+                    }                
+                    resolve({latitude, longitude})
+                })
+                */
+            }            
         },
         // indigenous language fluency
         iLangFluencies: [{
             iLangFluency: {
                 type: String,
+                trim: true,
+                lowercase: true,
                 required: true,
                 fluency:{
                     type: Number,
@@ -37,6 +50,8 @@ const interpreter = User.discriminator('Interpreter',
         certifications: [{
             certification: {
                 type: String,
+                trim: true,
+                lowercase: true,
                 required: true,
                 file: {
                     type: Buffer,
@@ -51,7 +66,8 @@ const interpreter = User.discriminator('Interpreter',
         // type of interpreting: simultaneous, etc
         service: {
             type: String,
-            trim: true
+            trim: true,
+            lowercase: true
         },
         // rating
         rating: {
