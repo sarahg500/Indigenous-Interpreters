@@ -19,8 +19,6 @@ router.post('/signup', urlencodedParser, async (req, res)=>{
         await user.save()
         // sendWelcomeEmail(user.email, user.name)
         const token = await user.generateAuthToken()
-        // interpreter coordinates are generated from location string
-        const coordinates = await user.generateCoordinates()
         res.status(201).send({ user, token })
     } catch(e){
         res.status(400).send()

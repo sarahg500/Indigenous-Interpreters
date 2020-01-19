@@ -14,9 +14,14 @@ router.post('/iProfile', async (req, res)=>{
     })
 
     try{
-        await iProfile.save()
-        res.status(201).send(iProfile)
+        // interpreter coordinates are generated from location string
+        await iProfile.generateCoordinates(req).then( async () => {
+            await iProfile.save().then( () =>
+                res.status(201).send(iProfile)
+            )
+        })
     } catch(e){
+        console.log(e)
         res.status(400).send(e)
     }
 })

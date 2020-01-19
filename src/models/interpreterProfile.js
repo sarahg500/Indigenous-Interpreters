@@ -4,16 +4,23 @@ const User = require('./user')
 const geocode = require('../../public/js/geocode')
 
 // returns a model with overlapping schema with the user
-const interpreter = User.discriminator('Interpreter', 
-    new mongoose.Schema({
+const interpreterSchema = new mongoose.Schema({
         // location
         location: {
-            type: String,
-            trim: true,
-            required: true,
+            locationString: {
+                type: String,
+                trim: true,
+                required: true,
+            },
             coordinates: {
-                type: Number,
-                required: true
+                latitude: {
+                    type: Number,
+                    //required: true
+                },
+                longitude: {
+                    type: Number,
+                    //required: true
+                }
                 // call method to parse location to latitude and longitude ..?                
             }            
         },
@@ -21,16 +28,14 @@ const interpreter = User.discriminator('Interpreter',
         iLangFluencies: [{
             iLangFluency: {
                 type: String,
-                trim: true,
-                lowercase: true,
                 required: true,
-                fluency:{
-                    type: Number,
-                    required: true,
-                    trim: true,
-                    min: 1,
-                    max: 5
-                },
+            },
+            fluency:{
+                type: Number,
+                required: true,
+                trim: true,
+                min: 1,
+                max: 5
             }
         }],
         // english language fluency
@@ -70,23 +75,61 @@ const interpreter = User.discriminator('Interpreter',
             min: 1,
             max: 5
         }
-    })
+    }
 )
 
 // generates the coordinates
-interpreter.methods.generateCoordinates = async function() {
-    const interpreter = this
-    const coors = geocode(req.query.location, (error, { latitude, longitude, location } ) => {
+interpreterSchema.methods.generateCoordinates = async function(req) {
+    //console.log(req.body)
+    //console.log(this)
+    /* const interpreter = this
+    const coors = await geocode(req.query.location, (error, { latitude, longitude, location } ) => {
         if (error) {
             return console.log(error)
         }
-        return {latitude, longitude}
+
+        return [latitude, longitude]
     })
 
-    interpreter.location.coodinates = interpreter.location.coodinates.concat({ coors })
+    console.log(coors)
+
+    interpreter.location.coodinates.latitude = coors[0]
+    interpreter.location.coodinates.longitude = coor[1]
     await interpreter.save()
 
-    return coordinates
+    return coordinates */
+    var long  = 3;
+    var lat = null;
+
+    let locationPromise = new Promise(function(resolve, reject) {
+        if(req.body.location.locationString) {
+            geocode(req.body.location.locationString, (error, { latitude, longitude, location } ) => {            
+                // errors need to be done 
+                if (error) {
+                    return console.log(error)
+                }
+                console.log(latitude, longitude)         
+                resolve({latitude, longitude})
+            })
+        } else {            
+            // more correct way?
+            resolve(0, 0)
+        }           
+    });
+
+    locationPromise.then( (value) => {       
+        if (value.latitude && value.longitude) {
+            //console.log(value.latitude, value.longitude)
+            this.location.coordinates.latitude = value.longitude
+            this.location.coordinates.longitude = value.latitude
+            //long = value.longitude
+            //lat = value.latitude
+            //console.log(long, lat)
+            console.log(this)
+            //await this.save()
+        }
+    }); 
+
 }
 
-module.exports = interpreter
+module.exports = User.discriminator('Interpreter', interpreterSchema)
