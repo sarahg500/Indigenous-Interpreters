@@ -66,12 +66,45 @@ router.post('/users/logoutAll', auth, async( req, res) => {
 })
 
 //only allowed to see profile if logged in
-router.get('/users/me', auth, async (req, res) => {    
+router.get('/users/me', auth, async (req, res) => {      
     res.send(req.user)
 })
 
 // gets multiple users (this is for the search page), no auth
-router.get('/users', async (req, res) => {    
+router.get('/users', auth, async (req, res) => {    
+
+    // this is undefined
+    console.log("I think this should not be undefined: " + req.user)    
+
+    // this is not in the right location
+    try {                 
+        console.log("this works")   
+        await req.user.populate('interpreters').execPopulate()   
+        console.log("this wasn't working before my push")                    
+
+        //  await req.user.populate({
+        //      path: 'users',
+        // //      match,
+        // //      options: {                            
+        // //          limit: parseInt(req.query.limit),
+        // //          skip: parseInt(req.query.skip)                
+        // //      }
+        //  }).execPopulate()
+    
+        // correct error        
+         res.send(req.user.interpreters)
+         console.log(req.user.interpreters)
+         
+    } catch(e){
+        res.status(500).send()
+    }
+
+
+
+
+
+
+
     const match = {
         kind: "Interpreter"
     }
@@ -114,29 +147,7 @@ router.get('/users', async (req, res) => {
         // TODO 5: sort results
     });    
 
-    // this is not in the right location
-    try {
-        console.log("this is the user, should be undefined: " + req.user)
-
-        await req.user.populate('interpreters').execPopulate()
-        // does not get past here
-        console.log("these are the users, should not be undefined: " + req.user)
-
-        //  await req.user.populate({
-        //      path: 'users',
-        // //      match,
-        // //      options: {                            
-        // //          limit: parseInt(req.query.limit),
-        // //          skip: parseInt(req.query.skip)                
-        // //      }
-        //  }).execPopulate()
     
-        // correct error        
-         res.send(req.user.interpreters)
-         
-    } catch(e){
-        res.status(500).send()
-    }
 
     // This does not work...
     
