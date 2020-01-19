@@ -66,16 +66,12 @@ router.post('/users/logoutAll', auth, async( req, res) => {
 })
 
 //only allowed to see profile if logged in
-router.get('/users/me', auth, async (req, res) => {
+router.get('/users/me', auth, async (req, res) => {    
     res.send(req.user)
 })
 
 // gets multiple users (this is for the search page), no auth
-router.get('/search', async (req, res)=>{    
-    res.render('search', {
-        title: 'Find Interpreters'
-    })
-
+router.get('/users', async (req, res) => {    
     const match = {
         kind: "Interpreter"
     }
@@ -108,38 +104,45 @@ router.get('/search', async (req, res)=>{
         if (value.latitude && value.longitude) {
             match.latitude = value.latitude
             match.longitude = value.longitude        
-        }
-        // TODO 1         
-        console.log(match)
+        }        
+        console.log(match)    
+
+        // TODO 2: populate
+        
+        // TODO 3: query string must contain ?limit=VALUE&skip=VALUE (limit how many results per page)
+        // TODO 4: distance formula between schema coors and match.lat match.long
+        // TODO 5: sort results
     });    
 
-    // TODO 1: debug interpreter schema coordinates     
-    // TODO 2: populate request debug
-    // TODO 3: query string must contain ?limit=VALUE&skip=VALUE (limit how many results per page)
-    // TODO 4: distance formula between schema coors and match.lat match.long
-    // TODO 5: sort results
+    // this is not in the right location
+    try {
+        console.log("this is the user, should be undefined: " + req.user)
 
-    // TODO 2
-    /*try{
-        await req.user.populate({
-            path: 'users',
-            match,
-            options: {
-                // TODO 3
-                // TODO 4
-                            
-                limit: parseInt(req.query.limit),
-                skip: parseInt(req.query.skip)                
-            }
-        }).execPopulate()
+        await req.user.populate('interpreters').execPopulate()
+        // does not get past here
+        console.log("these are the users, should not be undefined: " + req.user)
+
+        //  await req.user.populate({
+        //      path: 'users',
+        // //      match,
+        // //      options: {                            
+        // //          limit: parseInt(req.query.limit),
+        // //          skip: parseInt(req.query.skip)                
+        // //      }
+        //  }).execPopulate()
     
-        // correct error
-        res.send(req.user)
+        // correct error        
+         res.send(req.user.interpreters)
+         
     } catch(e){
         res.status(500).send()
     }
-    */
-   // TODO 5
+
+    // This does not work...
+    
+    // res.render('search', {
+    //     title: 'Find Interpreters'
+    // })
 })
 
 // user can update their own profiles
