@@ -4,8 +4,7 @@ const sharp = require('sharp')
 const User = require('../models/user')
 const auth = require('../middleware/auth')
 const bodyParser = require('body-parser')
-const { sendWelcomeEmail} = require('../emails/account')
-// this might be wrong path
+const { sendWelcomeEmail } = require('../emails/account')
 const geocode = require('../../public/js/geocode')
 const router = new express.Router()
 
@@ -20,6 +19,8 @@ router.post('/signup', urlencodedParser, async (req, res)=>{
         await user.save()
         // sendWelcomeEmail(user.email, user.name)
         const token = await user.generateAuthToken()
+        // interpreter coordinates are generated from location string
+        const coordinates = await user.generateCoordinates()
         res.status(201).send({ user, token })
     } catch(e){
         res.status(400).send()
@@ -81,30 +82,26 @@ router.get('/search', async (req, res)=>{
         kind: "Interpreter"
     }
 
-    if (req.query.language) {        
+    if (req.query.language)
         match.language = req.query.language.trim().toLowerCase()
-    }
-    if (req.query.certification) {        
+    if (req.query.certification)
         match.certification = req.query.certification.trim().toLowerCase()  
-    }
-    if (req.query.service) {        
+    if (req.query.service)
         match.service = req.query.service.trim().toLowerCase()
-    }
-    if (req.query.rating) {        
+    if (req.query.rating)
         match.rating = req.query.rating        
-    }
 
     let locationPromise = new Promise(function(resolve, reject) {
         if(req.query.location) {
             geocode(req.query.location, (error, { latitude, longitude, location } ) => {            
-                // TODO errors need to be done 
+                // errors need to be done 
                 if (error) {
                     return console.log(error)
                 }                
                 resolve({latitude, longitude})
             })
         } else {            
-            // TODO more correct way?
+            // more correct way?
             resolve(0, 0)
         }           
     });
@@ -114,30 +111,37 @@ router.get('/search', async (req, res)=>{
             match.latitude = value.latitude
             match.longitude = value.longitude        
         }
-        // fetch user coordinates, distance formula with lat long < x miles returns true
+        // TODO 1         
         console.log(match)
     });    
 
-    // TODO: this does not yet work
+    // TODO 1: debug interpreter schema coordinates     
+    // TODO 2: populate request debug
+    // TODO 3: query string must contain ?limit=VALUE&skip=VALUE (limit how many results per page)
+    // TODO 4: distance formula between schema coors and match.lat match.long
+    // TODO 5: sort results
+
+    // TODO 2
     /*try{
         await req.user.populate({
             path: 'users',
             match,
             options: {
-                // TODO: query string must contain ?limit=VALUE&skip=VALUE
-                // limit controls how many results per page
-                // skips control page number 1, 2, 3, etc. To get page number 2 if limit is 10, then skip=10
+                // TODO 3
+                // TODO 4
+                            
                 limit: parseInt(req.query.limit),
                 skip: parseInt(req.query.skip)                
             }
         }).execPopulate()
     
-        // TODO: error
+        // correct error
         res.send(req.user)
     } catch(e){
         res.status(500).send()
     }
     */
+   // TODO 5
 })
 
 // user can update their own profiles
